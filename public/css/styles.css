@@ -1,6 +1,299 @@
-/******* Change Box Model ***************/
+/******* Reset + base ***************/
 *,
 *:before,
-*:after {
-  box-sizing: border-box;
+*:after { 
+  box-sizing: border-box; 
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  background: #f4f4f4;
+  color: #333;
+  font-family: "Roboto", Arial, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 100;
+}
+
+/******* Header (mobile default) ***************/
+header {
+  background: #520303;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1200px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
+}
+header .siteName {
+  color: #FFF;
+  font-size: 1.5rem;
+  text-align: left;
+  font-family: "Lilita One", sans-serif;
+  font-weight: 100;
+}
+header #tools { 
+  text-align: right; 
+}
+header a { 
+  color:#fff; 
+  text-decoration:none; 
+}
+header a:hover { 
+  text-decoration: underline;
+ }
+header a:focus { 
+  outline:2px solid #fff; 
+  outline-offset:2px; 
+}
+header a:active { 
+  color:#ff0;
+}
+header a:visited { 
+  color:#ccc; 
+}
+
+header .siteName a:hover {
+  text-decoration: none;
+}
+
+/******* Main Menu (mobile default) ***************/
+nav {
+  background:#080228;
+  padding: 1rem;
+  max-width:1200px;
+  margin:auto;
+  box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+nav ul {
+  list-style:none;
+  margin:0; 
+  padding:0;
+  display:flex; 
+  justify-content:center;
+  flex-wrap: wrap;
+}
+nav li { 
+  margin:0; 
+}
+nav a {
+  color:#fff; 
+  padding:1rem; 
+  display:block; 
+  text-decoration:none;
+}
+nav a:hover { 
+  background:#131a64; 
+}
+nav a:focus { 
+  outline:2px solid #fff; 
+  outline-offset:2px; 
+}
+nav a:active { 
+  background:#666;
+}
+nav a:visited { 
+  color:#ccc; 
+}
+
+/******* Hero banner (mobile default) ***************/
+#hero-banner{
+  background:url('../images/vehicles/delorean.jpg') no-repeat center center;
+  height:300px;
+  color:#fff;
+  margin-bottom:1rem;
+  display:grid;
+  align-items:center; 
+  justify-items:center;
+  grid-template-columns: 2fr 1fr;
+}
+#hero-banner-box{
+  font-size:1.5rem;
+  background: rgba(20,10,76,.7);
+  padding:1rem 2rem;
+  border-radius:4px;
+  text-shadow:2px 2px 4px rgba(0,0,0,.9);
+  display:grid; 
+  grid-template-rows:auto auto;
+}
+#hero-banner-button{
+  background:#b0e88f; 
+  color:#000;
+  padding:.5rem 1rem; 
+  border:none; 
+  border-radius:4px;
+  text-decoration:none; 
+  font-size:1rem; 
+  margin-top:1rem;
+  display:inline-block; 
+  cursor:pointer;
+}
+#hero-banner-button:hover{ 
+  background:#95d06a;
+}
+#hero-banner-button:focus{ 
+  outline:2px solid #fff; 
+  outline-offset:2px; 
+}
+#hero-banner-button:active{ 
+  background:#70a045; 
+}
+
+/******* Main (mobile default) ***************/
+main{
+  padding:1rem;
+  max-width:1200px; 
+  margin:auto;
+  background:#fff;
+  box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+main h1, main h2, main h3 { 
+  color:#333;
+}
+main p { 
+  margin-bottom:1rem; 
+}
+main a { 
+  color:#333; 
+  text-decoration:none; 
+}
+main a:hover { 
+  text-decoration:underline; 
+}
+main a:focus { 
+  outline:2px solid #333; 
+  outline-offset:2px; 
+}
+main a:active { 
+  color:#ff0; 
+}
+main a:visited { 
+  color:#666; 
+}
+
+#main-content{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:1rem;
+  align-items:start;
+}
+
+#main-content-upgrades{
+  display:grid;
+  grid-template-columns: 1fr;
+  background:#f6f6f6;
+  padding:1rem;
+  border-radius:4px;
+  gap:1rem;
+}
+#main-content-upgrades h2{ 
+  grid-column: 1; 
+  text-align:center; 
+}
+#main-content-upgrades a {
+  background:#fff; 
+  border:1px solid #EEE; 
+  border-radius:4px;
+  padding:1rem; 
+  text-align:center; 
+  text-decoration:none;
+}
+#main-content-upgrades a:hover{ 
+  border-color:#95d06a; 
+}
+#main-content-upgrades a:focus{ 
+  outline:2px solid #333; 
+  outline-offset:2px; 
+}
+#main-content-upgrades a:active{ 
+  border-color:#95d06a; 
+}
+#main-content-upgrades a span{
+  display:block; 
+  margin-top:.5rem; 
+  color:#666; 
+  font-size:.9rem;
+}
+
+/* Reviews */
+#main-content-reviews{
+  padding:1rem;
+  border-radius:4px;
+  display:grid;
+  grid-template-columns:1fr;
+  grid-template-rows:auto;
+  gap:1rem;
+}
+#main-content-reviews ul{ 
+  margin:0; 
+  padding:0 0 0 1rem; 
+}
+
+/******* Footer (mobile default) ***************/
+footer{
+  background:#520303; 
+  color:#fff; 
+  text-align:center;
+  padding:1rem;
+  position:relative; 
+  bottom:0; 
+  width:100%;
+  max-width:1200px; 
+  margin:auto;
+  box-shadow:0 0 10px rgba(0,0,0,.1);
+  font-size:14px;
+}
+footer a{ 
+  color:#fff; 
+  text-decoration:none; 
+}
+footer a:hover{ 
+  text-decoration:underline; 
+}
+footer a:focus{ 
+  outline:2px solid #fff; 
+  outline-offset:2px; 
+}
+footer a:active{ 
+  color:#ff0; 
+}
+footer a:visited{ 
+  color:#ccc; 
+}
+
+/* ===================== */
+/*   Desktop ≥ 769px     */
+/* ===================== */
+@media (min-width: 769px){
+  header { 
+    padding: 1rem 2rem; 
+  }
+  nav { 
+    padding: 0 2rem; 
+  }
+
+  #hero-banner{
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  main{ 
+    padding: 2rem; 
+  }
+
+  #main-content{
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #main-content-upgrades{
+    grid-template-columns: 1fr 1fr;
+  }
+  #main-content-upgrades h2{ 
+    grid-column: span 2; 
+    text-align:left; 
+  }
 }
