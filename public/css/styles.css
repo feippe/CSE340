@@ -297,3 +297,29 @@ footer a:visited{
     text-align:left; 
   }
 }
+
+
+
+
+.vehicle-detail {
+  display: grid;
+  gap: 1rem;
+}
+
+.vehicle-detail__media img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .vehicle-detail {
+    grid-template-columns: 1.1fr 1fr;
+    align-items: start;
+  }
+}
+
+.vehicle-detail__title { margin: 0.25rem 0 0.75rem; }
+.vehicle-detail__price { font-size: 1.25rem; }
+.vehicle-detail__specs { list-style: none; padding: 0; margin: 0 0 1rem; }
+.vehicle-detail__specs li { margin: 0.25rem 0; }

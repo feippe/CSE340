@@ -1,18 +1,27 @@
 /* ******************************************
- * This server.js file is the primary file of the 
- * application. It is used to control the project.
+ * Primary server file
  *******************************************/
-/* ***********************
- * Require Statements
- *************************/
 const express = require("express")
-const env = require("dotenv").config()
+require("dotenv").config()
 const app = express()
-const static = require("./routes/static")
+
+/* ***********************
+ * Requires (routers / controllers / utils)
+ *************************/
 const expressLayouts = require("express-ejs-layouts")
+const staticRoutes = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
 const utilities = require("./utilities")
+
+/* ***********************
+ * Global middleware
+ *************************/
+// Body parsers
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+// Archivos estáticos
+app.use(express.static("public"))
 
 /* ***********************
  * View Engine and Templates
@@ -24,45 +33,52 @@ app.set("layout", "./layouts/layout")
 /* ***********************
  * Routes
  *************************/
-app.use(static)
+app.use(staticRoutes)
 app.use("/inv", inventoryRoute)
-/*app.get("/", function (req, res) {
-  res.render("index", { title: "Home" })
-})*/
+
+// Home (con wrapper de manejo de errores)
 app.get("/", utilities.handleErrors(baseController.buildHome))
 
-/* 404 catch-all handler (middleware) */
-app.use(async (req, res, next) => {
-  next({status: 404, message: 'Sorry, we appear to have lost that page.'})
+// Ruta que provoca un 500 intencional (para la tarea)
+app.get("/cause-500", (_req, _res) => {
+  const err = new Error("Intentional server error for testing")
+  err.status = 500
+  throw err
 })
 
-
+/* ***********************
+ * 404 catch-all (después de todas las rutas)
+ *************************/
+app.use((req, res, next) => {
+  next({ status: 404, message: "Sorry, we appear to have lost that page." })
+})
 
 /* ***********************
-* Express Error Handler
-* Place after all other middleware
-*************************/
-app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav()
+ * Global Error Handler (último)
+ *************************/
+app.use(async (err, req, res, _next) => {
+  const nav = await utilities.getNav()
+  const status = err.status || 500
+  const message =
+    status === 404
+      ? err.message
+      : "Oh no! There was a crash. Maybe try a different route?"
+
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
-  res.render("errors/error", {
-    title: err.status || 'Server Error',
+  res.status(status).render("errors/error", {
+    title: status === 404 ? "404 - Not Found" : "Server Error",
+    status,
     message,
-    nav
+    nav,
   })
 })
 
 /* ***********************
- * Local Server Information
- * Values from .env (environment) file
+ * Server bootstrap
  *************************/
-const port = process.env.PORT
-const host = process.env.HOST
+const port = process.env.PORT || 3000
+const host = process.env.HOST || "http://localhost"
 
-/* ***********************
- * Log statement to confirm server operation
- *************************/
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })

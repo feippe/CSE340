@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %> | ACME Motors</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <%- nav %>
+    </header>
+
+    <main id="main-content">
+      <h1><%= title %></h1>
+      <div class="detail-wrapper">
+        <%- detailHTML %>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; <%= new Date().getFullYear() %> ACME Motors</p>
+      <p><a href="/cause-500">Trigger 500 error</a></p>
+    </footer>
+  </body>
+</html>
