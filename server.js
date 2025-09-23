@@ -39,7 +39,9 @@ app.use("/inv", inventoryRoute)
 // Home (con wrapper de manejo de errores)
 app.get("/", utilities.handleErrors(baseController.buildHome))
 
-// Ruta que provoca un 500 intencional (para la tarea)
+/* ***********************
+ * 500
+ *************************/
 app.get("/cause-500", (_req, _res) => {
   const err = new Error("Intentional server error for testing")
   err.status = 500
@@ -47,7 +49,7 @@ app.get("/cause-500", (_req, _res) => {
 })
 
 /* ***********************
- * 404 catch-all (después de todas las rutas)
+ * 404 catch-all
  *************************/
 app.use((req, res, next) => {
   next({ status: 404, message: "Sorry, we appear to have lost that page." })
