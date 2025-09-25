@@ -327,7 +327,8 @@ footer a:visited{
 
 
 
-
+#addClassification,
+#addInventory,
 #loginForm,
 #registerForm  {
   display: inline-block;
@@ -337,12 +338,20 @@ footer a:visited{
   border-radius: 8px;
   width: 400px;
 }
+
+#addClassification > label,
+#addInventory > label,
 #registerForm > label,
 #loginForm > label {
   display: inline-block;
   width: 100%;
   margin-bottom: 16px;
 }
+#addClassification > label > input[type="text"],
+#addInventory > label > input[type="text"],
+#addInventory > label > input[type="number"],
+#addInventory > label > select,
+#addInventory > label > textarea,
 #registerForm > label > input[type="text"],
 #registerForm > label > input[type="email"],
 #registerForm > label > input[type="password"],
@@ -357,11 +366,16 @@ footer a:visited{
   border-radius: 4px;
   width: 100%;
 }
+#addClassification > div,
+#addInventory > div,
+#registerForm > div,
 #loginForm > div {
   display: inline-block;
   width: 100%;
   text-align: center;
 }
+#addClassification input[type="submit"],
+#addInventory input[type="submit"],
 #registerForm input[type="submit"],
 #loginForm input[type="submit"] {
   padding: 8px 16px;
@@ -375,10 +389,14 @@ footer a:visited{
   border-radius: 4px;
   cursor: pointer;
 }
+#addClassification input[type="submit"]:hover,
+#addInventory input[type="submit"]:hover,
 #registerForm input[type="submit"]:hover,
 #loginForm input[type="submit"]:hover  {
   background-color: #3b5822;
 }
+#addClassification > div > a,
+#registerForm > div > a,
 #loginForm > div > a {
   color: dodgerblue;
 }
