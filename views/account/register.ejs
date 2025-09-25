@@ -1,0 +1,147 @@
+<!-- views/account/register.ejs -->
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } %>
+
+<%- messages() %>
+
+<% if (errors && errors.length) { %>
+  <div class="error-summary" role="alert" aria-labelledby="error-title" tabindex="-1">
+    <h2 id="error-title">Please fix the following problems:</h2>
+    <ul>
+      <% errors.forEach(e => { %>
+        <li><%= e.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<% 
+  const eFirst = (errors || []).find(e => e.param === 'rFirstName')
+  const eLast  = (errors || []).find(e => e.param === 'rLastName')
+  const eEmail = (errors || []).find(e => e.param === 'rEmail')
+  const ePwd   = (errors || []).find(e => e.param === 'rPassword')
+%>
+
+
+
+<form id="registerForm" action="/account/register" method="post" novalidate>
+
+  <label for="fname">First name
+    <input
+      id="fname"
+      type="text"
+      name="rFirstName"
+      value="<%= typeof rFirstName !== 'undefined' ? rFirstName : '' %>"
+      required
+      minlength="1"
+      autocomplete="given-name"
+      <%= eFirst ? 'aria-invalid="true" aria-describedby="err-fname"' : '' %>
+    >
+  </label>
+  <% if (eFirst) { %><div id="err-fname" class="field-error"><%= eFirst.msg %></div><% } %>
+
+  <label for="lname">Last name
+    <input
+      id="lname"
+      type="text"
+      name="rLastName"
+      value="<%= typeof rLastName !== 'undefined' ? rLastName : '' %>"
+      required
+      minlength="1"
+      autocomplete="family-name"
+      <%= eLast ? 'aria-invalid="true" aria-describedby="err-lname"' : '' %>
+    >
+  </label>
+  <% if (eLast) { %><div id="err-lname" class="field-error"><%= eLast.msg %></div><% } %>
+
+  <label for="email">Email
+    <input
+      id="email"
+      type="email"
+      name="rEmail"
+      value="<%= typeof rEmail !== 'undefined' ? rEmail : '' %>"
+      required
+      autocomplete="email"
+      <%= eEmail ? 'aria-invalid="true" aria-describedby="err-email"' : '' %>
+    >
+  </label>
+  <% if (eEmail) { %><div id="err-email" class="field-error"><%= eEmail.msg %></div><% } %>
+
+  <label for="pwd">Password
+    <input
+      id="pwd"
+      type="password"
+      name="rPassword"
+      required
+      minlength="12"
+      pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$"
+      title="At least 12 chars, incl. 1 uppercase, 1 number, and 1 special character."
+      aria-describedby="pwd_rules"<%= ePwd ? ' err-pwd' : '' %>
+      <%= ePwd ? 'aria-invalid="true" aria-describedby="pwd_rules err-pwd"' : '' %>
+    >
+  </label>
+  <% if (ePwd) { %><div id="err-pwd" class="field-error"><%= ePwd.msg %></div><% } %>
+
+  <div id="pwd_rules">
+    Password must be at least 12 chars and include 1 uppercase, 1 number, and 1 special character.
+  </div>
+
+  <div>
+    <input type="submit" value="Create Account">
+  </div>
+</form>
+
+
+<script>
+  // Toggle show/hide password
+  (function () {
+    const btn = document.getElementById('togglePwd');
+    const pwd = document.getElementById('pwd');
+    btn?.addEventListener('click', () => {
+      pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    });
+
+    // Validación amigable (opcional). Si prefieres nativo, quita el novalidate del <form>.
+    const form = document.getElementById('registerForm');
+    function setError(input, msg) { input.setCustomValidity(msg || ''); }
+    function clearError(input) { input.setCustomValidity(''); }
+
+    // Reglas password “en vivo”
+    function validatePassword() {
+      const v = pwd.value || '';
+      let msg = '';
+      if (v.length < 12) msg = 'Password must be at least 12 characters.';
+      else if (!/[A-Z]/.test(v)) msg = 'Include at least one uppercase letter.';
+      else if (!/\d/.test(v)) msg = 'Include at least one number.';
+      else if (!/[^A-Za-z0-9]/.test(v)) msg = 'Include at least one special character.';
+      setError(pwd, msg);
+    }
+    pwd.addEventListener('input', validatePassword);
+    pwd.addEventListener('blur', validatePassword);
+
+    // Email nativo + mensaje personalizado
+    const email = document.getElementById('email');
+    email.addEventListener('input', () => {
+      if (email.validity.typeMismatch) setError(email, 'Please enter a valid email address.');
+      else clearError(email);
+    });
+
+    // Requeridos para first/last name
+    ['fname','lname'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', () => {
+        if (el.value.trim().length === 0) setError(el, 'This field is required.');
+        else clearError(el);
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      validatePassword();
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        form.reportValidity();
+      }
+    });
+  })();
+</script>

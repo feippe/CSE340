@@ -1,0 +1,20 @@
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } %>
+
+<%- messages() %>
+
+<form id="loginForm" action="">
+    <label>Email:
+        <input type="email" name="lEmail" placeholder="email" required>
+    </label>
+    <label>Password:
+        <input type="password" name="lPassword" placeholder="password" required>
+    </label>
+    <div>
+        <input type="submit" value="LOGIN">
+    </div>
+    <div>
+        No account? <a href="/account/register">Sign-up</a>
+    </div>
+</form>

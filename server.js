@@ -1,3 +1,7 @@
+const session = require("express-session")
+const pool = require('./database/')
+
+
 /* ******************************************
  * Primary server file
  *******************************************/
@@ -12,6 +16,7 @@ const expressLayouts = require("express-ejs-layouts")
 const staticRoutes = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
+const accountRoute = require("./routes/accountRoute")
 const utilities = require("./utilities")
 
 /* ***********************
@@ -30,11 +35,34 @@ app.set("view engine", "ejs")
 app.use(expressLayouts)
 app.set("layout", "./layouts/layout")
 
+
+/* ***********************
+ * Middleware
+ * ************************/
+ app.use(session({
+  store: new (require('connect-pg-simple')(session))({
+    createTableIfMissing: true,
+    pool,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  name: 'sessionId',
+}))
+
+// Express Messages Middleware
+app.use(require('connect-flash')())
+app.use(function(req, res, next){
+  res.locals.messages = require('express-messages')(req, res)
+  next()
+})
+
 /* ***********************
  * Routes
  *************************/
 app.use(staticRoutes)
 app.use("/inv", inventoryRoute)
+app.use("/account", accountRoute)
 
 // Home (con wrapper de manejo de errores)
 app.get("/", utilities.handleErrors(baseController.buildHome))

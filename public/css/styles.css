@@ -323,3 +323,66 @@ footer a:visited{
 .vehicle-detail__price { font-size: 1.25rem; }
 .vehicle-detail__specs { list-style: none; padding: 0; margin: 0 0 1rem; }
 .vehicle-detail__specs li { margin: 0.25rem 0; }
+
+
+
+
+
+#loginForm,
+#registerForm  {
+  display: inline-block;
+  padding: 16px 32px;
+  background-color: #EEE;
+  border: solid 1px #CCC;
+  border-radius: 8px;
+  width: 400px;
+}
+#registerForm > label,
+#loginForm > label {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 16px;
+}
+#registerForm > label > input[type="text"],
+#registerForm > label > input[type="email"],
+#registerForm > label > input[type="password"],
+#loginForm > label > input[type="email"],
+#loginForm > label > input[type="password"]  {
+  font-size: 14px;
+  padding: 8px 16px;
+  background: none;
+  background-color: #FFF;
+  border: none;
+  border: solid 1px #c8cbee;
+  border-radius: 4px;
+  width: 100%;
+}
+#loginForm > div {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+}
+#registerForm input[type="submit"],
+#loginForm input[type="submit"] {
+  padding: 8px 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  border: none;
+  background: none;
+  background-color: #70a045;
+  color: #FFF;
+  border: solid 1px #3b5822;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#registerForm input[type="submit"]:hover,
+#loginForm input[type="submit"]:hover  {
+  background-color: #3b5822;
+}
+#loginForm > div > a {
+  color: dodgerblue;
+}
+
+.error-summary { border: 1px solid; padding: 1rem; margin-bottom: 1rem; }
+.field-error { margin: .25rem 0 1rem; font-size: .9rem; }
+[aria-invalid="true"] { outline: 2px solid; }
