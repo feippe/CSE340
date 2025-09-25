@@ -13,5 +13,7 @@ router.post(
     checkRegData,
     utilities.handleErrors(registerAccount)
 )
-
+router.post('/login', (req, res) => {
+  res.status(200).send('login process')
+})
 module.exports = router;

@@ -28,4 +28,13 @@ async function getAccountByEmail(email) {
   return result.rowCount > 0
 }
 
-module.exports = { registerAccount, getAccountByEmail }
+/* **********************
+ * Check for existing email
+ * ********************* */
+async function checkExistingEmail(email) {
+  const sql = 'SELECT 1 FROM account WHERE account_email = $1 LIMIT 1'
+  const result = await pool.query(sql, [email])
+  return result.rowCount > 0 // true si existe
+}
+
+module.exports = { registerAccount, getAccountByEmail, checkExistingEmail }

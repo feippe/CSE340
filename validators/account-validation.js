@@ -18,7 +18,7 @@ function registrationRules() {
       .isEmail().withMessage('A valid email is required.')
       .normalizeEmail()
       .custom(async (email) => {
-        const exists = await accountModel.getAccountByEmail(email)
+        const exists = await accountModel.checkExistingEmail(email)
         if (exists) {
           throw new Error('Email is already registered.')
         }
