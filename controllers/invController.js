@@ -39,9 +39,13 @@ invCont.buildByInventoryId = async function (req, res, next) {
 
 invCont.buildManagement = async function (req, res) {
   const nav = await utilities.getNav()
+
+  const classificationSelect = await utilities.buildClassificationList()
+
   res.render('inventory/management', {
     title: 'Inventory Management',
-    nav
+    nav,
+    classificationSelect
   })
 };
 
@@ -102,7 +106,7 @@ invCont.createClassification = async function (req, res) {
    INVENTORY
    ============================ */
 
-// GET inventario
+// GET inventory
 invCont.buildAddInventory = async function (req, res) {
   const nav = await utilities.getNav()
   const classificationSelect = await utilities.buildClassificationList()
@@ -127,7 +131,7 @@ invCont.buildAddInventory = async function (req, res) {
     })
 }
 
-// POST inventario
+// POST inventory
 invCont.createInventory = async function (req, res) {
   const nav = await utilities.getNav()
 
@@ -191,5 +195,130 @@ invCont.createInventory = async function (req, res) {
     classification_id
   })
 }
+
+/* ***************************
+ *  Return Inventory by Classification As JSON
+ * ************************** */
+invCont.getInventoryJSON = async (req, res, next) => {
+  const classification_id = parseInt(req.params.classification_id)
+  const invData = await invModel.getInventoryByClassificationId(classification_id)
+  if (invData && invData.length > 0) {
+    return res.json(invData)
+  } else {
+    next(new Error("No data returned"))
+    return res.json([])
+  }
+}
+
+/* ***************************
+ *  Build edit inventory view
+ * ************************** */
+invCont.buildEditInventory = async function (req, res, next) {
+  try {
+    const inv_id = Number(req.params.inv_id);
+    if (!Number.isInteger(inv_id)) {
+      const err = new Error("Invalid inventory id");
+      err.status = 400;
+      throw err;
+    }
+
+    const nav = await utilities.getNav()
+    
+    const vehicle = await invModel.getVehicleById(inv_id);
+    if (!vehicle) {
+      const err = new Error("Vehicle not found");
+      err.status = 404;
+      throw err;
+    }
+
+    const classificationSelect = await utilities.buildClassificationList()
+    const itemName = `${vehicle.inv_make} ${vehicle.inv_model}`
+
+    res.render(
+    'inventory/edit-inventory', 
+    { 
+      title: `Edit ${itemName}`, 
+      nav, 
+      classificationSelect: classificationSelect,
+      errors: [],
+      inv_id: vehicle.inv_id,
+      inv_make: vehicle.inv_make,
+      inv_model: vehicle.inv_model,
+      inv_year: vehicle.inv_year,
+      inv_description: vehicle.inv_description,
+      inv_image: vehicle.inv_image,
+      inv_thumbnail: vehicle.inv_thumbnail,
+      inv_price: vehicle.inv_price,
+      inv_miles: vehicle.inv_miles,
+      inv_color: vehicle.inv_color,
+      classification_id: vehicle.classification_id
+    })
+  } catch (error) {
+    next(error);
+  }
+}
+
+// POST edit inventory
+invCont.updateInventory = async function (req, res) {
+  const nav = await utilities.getNav()
+
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_miles,
+    inv_color,
+    classification_id
+  } = req.body
+
+  const updateResult = await invModel.updateInventory(
+    inv_id,  
+    inv_make,
+    inv_model,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_year,
+    inv_miles,
+    inv_color,
+    classification_id
+  )
+
+  if (updateResult) {
+    const itemName = updateResult.inv_make + " " + updateResult.inv_model
+    req.flash("notice", `The ${itemName} was successfully updated.`)
+    res.redirect("/inv/")
+  } else {
+    const classificationSelect = await utilities.buildClassificationList(classification_id)
+    const itemName = `${inv_make} ${inv_model}`
+    req.flash("notice", "Sorry, the insert failed.")
+    res.status(501).render("inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect: classificationSelect,
+      errors: null,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
+    })
+  }
+
+}
+
+
 
 module.exports = invCont;

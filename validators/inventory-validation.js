@@ -48,7 +48,23 @@ async function checkInventoryData(req, res, next) {
     nav,
     errors: errors.array(),
     classificationSelect,
-    ...req.body // sticky para todos los inputs
+    ...req.body
+  })
+}
+
+async function checkUpdateData(req, res, next) {
+  const errors = validationResult(req)
+  if (errors.isEmpty()) return next()
+  const utilities = require('../utilities/')
+  const nav = await utilities.getNav()
+  const classificationSelect = await utilities.buildClassificationList(req.body.classification_id)
+  return res.status(400).render(
+    'inventory/edit-inventory', {
+    title: 'Edit Inventory',
+    nav,
+    errors: errors.array(),
+    classificationSelect,
+    ...req.body
   })
 }
 
