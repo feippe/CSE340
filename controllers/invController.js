@@ -205,7 +205,6 @@ invCont.getInventoryJSON = async (req, res, next) => {
   if (invData && invData.length > 0) {
     return res.json(invData)
   } else {
-    next(new Error("No data returned"))
     return res.json([])
   }
 }
@@ -318,6 +317,52 @@ invCont.updateInventory = async function (req, res) {
   }
 
 }
+
+/* ***************************
+ * Build delete confirmation view
+ * ************************** */
+invCont.buildDeleteConfirmation = async function (req, res, next) {
+  const inv_id = parseInt(req.params.inv_id);
+  try {
+    const nav = await utilities.getNav();
+    const vehicle = await invModel.getVehicleById(inv_id);
+    if (!vehicle) {
+      const err = new Error("Vehicle not found");
+      err.status = 404;
+      throw err;
+    }
+    const itemName = `${vehicle.inv_make} ${vehicle.inv_model}`;
+    res.render("inventory/delete-confirm", {
+      title: "Delete " + itemName,
+      nav,
+      errors: null,
+      inv_id: vehicle.inv_id,
+      inv_make: vehicle.inv_make,
+      inv_model: vehicle.inv_model,
+      inv_year: vehicle.inv_year,
+      inv_price: vehicle.inv_price,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* ***************************
+ * Process the delete request
+ * ************************** */
+invCont.deleteVehicle = async function (req, res, next) {
+  const inv_id = parseInt(req.body.inv_id);
+
+  const deleteResult = await invModel.deleteInventoryItem(inv_id);
+
+  if (deleteResult) {
+    req.flash("notice", "The vehicle was successfully deleted.");
+    res.redirect("/inv/");
+  } else {
+    req.flash("notice", "Sorry, the deletion failed.");
+    res.redirect(`/inv/delete/${inv_id}`);
+  }
+};
 
 
 

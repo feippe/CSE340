@@ -15,17 +15,20 @@ router.get(
 );
 
 router.get(
-  '/', 
+  '/',
+  utilities.checkAccountType,
   utilities.handleErrors(invController.buildManagement)
 )
 
 router.get(
   '/add-classification', 
+  utilities.checkAccountType,
   utilities.handleErrors(invController.buildAddClassification)
 )
 
 router.post(
   '/add-classification',
+  utilities.checkAccountType,
   classificationRules(),
   checkClassificationData,
   utilities.handleErrors(invController.createClassification)
@@ -33,11 +36,13 @@ router.post(
 
 router.get(
   '/add-inventory', 
+  utilities.checkAccountType,
   utilities.handleErrors(invController.buildAddInventory)
 )
 
 router.post(
   '/add-inventory',
+  utilities.checkAccountType,
   inventoryRules(),
   checkInventoryData,
   utilities.handleErrors(invController.createInventory)
@@ -50,10 +55,27 @@ router.get(
 
 router.get(
   '/edit/:inv_id', 
+  utilities.checkAccountType,
   utilities.handleErrors(invController.buildEditInventory)
 )
 
-router.post("/update/", invController.updateInventory)
+router.post(
+  "/update/", 
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.updateInventory)
+)
+
+router.get(
+  "/delete/:inv_id", 
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.buildDeleteConfirmation)
+)
+
+router.post(
+  "/delete", 
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.deleteVehicle)
+)
 
 
 module.exports = router;

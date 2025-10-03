@@ -18,6 +18,8 @@ const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
 const accountRoute = require("./routes/accountRoute")
 const utilities = require("./utilities")
+const cookieParser = require("cookie-parser")
+
 
 /* ***********************
  * Global middleware
@@ -27,6 +29,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 // Archivos estáticos
 app.use(express.static("public"))
+app.use(cookieParser())
+app.use(utilities.checkJWTToken)
 
 /* ***********************
  * View Engine and Templates

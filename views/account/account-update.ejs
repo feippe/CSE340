@@ -1,0 +1,50 @@
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+   <% errors.forEach(error => { %>
+     <li><%= error.msg %></li>
+  <%  }) %>
+   </ul>
+<% } %>
+
+<div class="form-container">
+    <h2>Update Account Information</h2>
+    <form action="/account/update/account" method="post">
+        <fieldset>
+            <div class="form-group">
+                <label for="account_firstname">First Name:</label>
+                <input type="text" name="account_firstname" id="account_firstname" required value="<%= locals.account_firstname %>">
+            </div>
+            <div class="form-group">
+                <label for="account_lastname">Last Name:</label>
+                <input type="text" name="account_lastname" id="account_lastname" required value="<%= locals.account_lastname %>">
+            </div>
+            <div class="form-group">
+                <label for="account_email">Email:</label>
+                <input type="email" name="account_email" id="account_email" required value="<%= locals.account_email %>">
+            </div>
+            <input type="hidden" name="account_id" value="<%= locals.account_id %>">
+            <button type="submit">Update Account</button>
+        </fieldset>
+    </form>
+
+    <h2>Change Password</h2>
+    <p>Note: Changing your password will update it permanently. Passwords must be at least 12 characters long and include at least one uppercase letter, one number, and one special character.</p>
+    <form action="/account/update/password" method="post">
+        <fieldset>
+            <div class="form-group">
+                <label for="account_password">New Password:</label>
+                <input type="password" name="account_password" id="account_password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+            </div>
+            <input type="hidden" name="account_id" value="<%= locals.account_id %>">
+            <button type="submit">Change Password</button>
+        </fieldset>
+    </form>
+</div>

@@ -1,5 +1,7 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
 /* ************************
  * Constructs the nav HTML unordered list
@@ -83,6 +85,52 @@ Util.buildClassificationGrid = async function (data) {
     grid = '<p class="notice">Sorry, no matching vehicles could be found.</p>'
   }
   return grid
+}
+
+/* ****************************************
+* Middleware to check token validity
+* *************************************** */
+Util.checkJWTToken = (req, res, next) => {
+  if (req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, accountData) {
+        if (err) {
+          req.flash("notice", "Please login");
+          res.clearCookie("jwt");
+          return res.redirect("/account/login");
+        }
+        res.locals.accountData = accountData;
+        res.locals.loggedin = true;
+        next();
+      }
+    );
+  } else {
+    next();
+  }
+}
+
+/* ****************************************
+* Middleware to check account type
+* *************************************** */
+Util.checkAccountType = (req, res, next) => {
+  // First, check if the user is logged in at all
+  if (res.locals.loggedin) {
+    const accountType = res.locals.accountData.account_type;
+    // Then, check if they have the correct role
+    if (accountType === "Employee" || accountType === "Admin") {
+      next(); // They are authorized, continue
+    } else {
+      // They are logged in, but not authorized
+      req.flash("notice", "You do not have permission to access this page.");
+      res.redirect("/account/login");
+    }
+  } else {
+    // They are not logged in at all
+    req.flash("notice", "Please log in to access this page.");
+    res.redirect("/account/login");
+  }
 }
 
 /* ****************************************

@@ -72,5 +72,83 @@ async function registerAccount(req, res) {
   }
 }
 
+/* ****************************************
+* Build Account Update View
+* *************************************** */
+async function buildUpdateView(req, res, next) {
+    const account_id = parseInt(req.params.account_id);
+    const nav = await utilities.getNav();
+    const accountData = await accountModel.getAccountById(account_id);
+    res.render("account/account-update", {
+        title: "Update Account Information",
+        nav,
+        errors: null,
+        account_firstname: accountData.account_firstname,
+        account_lastname: accountData.account_lastname,
+        account_email: accountData.account_email,
+        account_id: accountData.account_id,
+    });
+}
 
-module.exports = { buildLogin, buildRegister, registerAccount }
+/* ****************************************
+* Process Account Update
+* *************************************** */
+async function updateAccount(req, res) {
+    const { account_firstname, account_lastname, account_email, account_id } = req.body;
+    const updateResult = await accountModel.updateAccount(account_firstname, account_lastname, account_email, account_id);
+
+    if (updateResult) {
+        req.flash("notice", `${account_firstname}, your information has been updated.`);
+        res.redirect("/account/");
+    } else {
+        const nav = await utilities.getNav();
+        req.flash("notice", "Sorry, the update failed.");
+        res.status(501).render("account/account-update", {
+            title: "Update Account Information",
+            nav,
+            errors: null,
+            account_firstname,
+            account_lastname,
+            account_email,
+            account_id,
+        });
+    }
+}
+
+/* ****************************************
+* Process Password Update
+* *************************************** */
+async function updatePassword(req, res) {
+    const { account_password, account_id } = req.body;
+    const hashedPassword = await bcrypt.hash(account_password, 10);
+    const updateResult = await accountModel.updatePassword(hashedPassword, account_id);
+
+    if (updateResult) {
+        req.flash("notice", "Your password has been updated.");
+        res.redirect("/account/");
+    } else {
+        const nav = await utilities.getNav();
+        const accountData = await accountModel.getAccountById(account_id);
+        req.flash("notice", "Sorry, the password update failed.");
+        res.status(501).render("account/account-update", {
+            title: "Update Account Information",
+            nav,
+            errors: null,
+            account_firstname: accountData.account_firstname,
+            account_lastname: accountData.account_lastname,
+            account_email: accountData.account_email,
+            account_id,
+        });
+    }
+}
+
+/* ****************************************
+* Process Logout
+* *************************************** */
+function logout(req, res) {
+    res.clearCookie("jwt");
+    res.redirect("/");
+}
+
+
+module.exports = { buildLogin, buildRegister, registerAccount, buildUpdateView, updateAccount, updatePassword, logout }
