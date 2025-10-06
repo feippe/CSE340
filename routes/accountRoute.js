@@ -1,8 +1,8 @@
 const express = require('express');
 const router = new express.Router();
-const { buildLogin, buildRegister, registerAccount, buildUpdateView, updateAccount, updatePassword, logout } = require('../controllers/accController');
+const { accountLogin, buildLogin, buildRegister, registerAccount, buildUpdateView, updateAccount, updatePassword, logout } = require('../controllers/accController');
 const utilities = require("../utilities");
-const { registrationRules, checkRegData, updateAccountRules, updatePasswordRules } = require('../validators/account-validation');
+const { checkUpdateData, loginRules, checkLoginData, registrationRules, checkRegData, updateAccountRules, updatePasswordRules } = require('../validators/account-validation');
 
 
 router.get(
@@ -21,11 +21,12 @@ router.post(
     checkRegData,
     utilities.handleErrors(registerAccount)
 )
+
 router.post(
-  '/login',
-  (req, res) => {
-    res.status(200).send('login process')
-  }
+  "/login",
+  loginRules(),
+  checkLoginData,
+  utilities.handleErrors(accountLogin)
 )
 
 router.get(
@@ -35,15 +36,15 @@ router.get(
 
 router.post(
     "/update/account",
-    updateAccountRules,
-    checkRegData,
+    updateAccountRules(),
+    checkUpdateData,
     utilities.handleErrors(updateAccount)
 )
 
 router.post(
     "/update/password",
-    updatePasswordRules,
-    checkRegData,
+    updatePasswordRules(),
+    checkUpdateData,
     utilities.handleErrors(updatePassword)
 )
 

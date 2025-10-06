@@ -57,6 +57,34 @@ async function checkRegData(req, res, next) {
   });
 }
 
+/* ******************************
+ * Check update data and return errors or continue
+ * ***************************** */
+async function checkUpdateData(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const nav = await require('../utilities/').getNav();
+        const { 
+          account_firstname, 
+          account_lastname, 
+          account_email, 
+          account_id 
+        } = req.body;
+        res.render("account/account-update", {
+            title: "Update Account Information",
+            nav,
+            errors: errors.array(),
+            account_firstname,
+            account_lastname,
+            account_email,
+            account_id,
+        });
+        return;
+    }
+    next();
+}
+
+
 
 function updateAccountRules () {
   return [
@@ -81,9 +109,51 @@ function updatePasswordRules() {
     ];
 }
 
+/* **********************************
+ * Login Data Validation Rules
+ * ********************************* */
+function loginRules() {
+  return [
+    // email is required and must be valid
+    body("account_email")
+      .trim()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("A valid email is required."),
+
+    // password is required
+    body("account_password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password is required."),
+  ]
+}
+
+/* ******************************
+ * Check login data and return errors or continue
+ * ***************************** */
+async function checkLoginData(req, res, next) {
+    const { account_email } = req.body
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        const nav = await require('../utilities/').getNav()
+        res.render("account/login", {
+            title: "Login",
+            nav,
+            errors: errors.array(),
+            account_email,
+        })
+        return
+    }
+    next()
+}
+
 module.exports = { 
   registrationRules, 
   checkRegData, 
   updateAccountRules, 
-  updatePasswordRules 
+  updatePasswordRules,
+  loginRules,
+  checkLoginData,
+  checkUpdateData
 }

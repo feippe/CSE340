@@ -22,10 +22,20 @@ async function registerAccount(account_firstname, account_lastname, account_emai
   }
 }
 
-async function getAccountByEmail(email) {
-  const sql = 'SELECT 1 FROM account WHERE account_email = $1 LIMIT 1'
-  const result = await pool.query(sql, [email])
-  return result.rowCount > 0
+/* *****************************
+ * Get account data using email address
+ * ***************************** */
+async function getAccountByEmail (account_email) {
+  try {
+    // We need to select all necessary fields, including the password
+    const result = await pool.query(
+      'SELECT account_id, account_firstname, account_lastname, account_email, account_type, account_password FROM account WHERE account_email = $1',
+      [account_email]
+    )
+    return result.rows[0] // Return the full account object
+  } catch (error) {
+    return new Error("No matching email found")
+  }
 }
 
 /* **********************
@@ -87,4 +97,11 @@ async function updatePassword(account_password, account_id) {
     }
 }
 
-module.exports = { registerAccount, getAccountByEmail, checkExistingEmail, getAccountById, updateAccount, updatePassword }
+module.exports = { 
+  registerAccount, 
+  getAccountByEmail, 
+  checkExistingEmail, 
+  getAccountById, 
+  updateAccount, 
+  updatePassword 
+}
