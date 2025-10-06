@@ -1,6 +1,8 @@
 const utilities = require("../utilities/")
 const accountModel = require('../models/account-model')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 /* ****************************************
 *  Deliver login view
@@ -29,48 +31,93 @@ async function buildRegister(req, res, next) {
 *  Process Registration
 * *************************************** */
 async function registerAccount(req, res) {
-  const nav = await utilities.getNav()
+  console.log("--- 1. Entrando a la función registerAccount ---");
+  let nav;
+  try {
+    nav = await utilities.getNav();
+  } catch (navError) {
+    console.error("Error obteniendo la navegación:", navError);
+    req.flash('notice', 'Error interno del servidor.');
+    return res.status(500).render('account/register', { title: 'Registration', nav: '', errors: null });
+  }
+  
   const {
     rFirstName,
     rLastName,
     rEmail,
     rPassword
-  } = req.body
+  } = req.body;
 
-  let hashedPassword
+  console.log("--- 2. Hasheando la contraseña ---");
+  const hashedPassword = bcrypt.hashSync(rPassword, 10);
+  console.log("--- 3. Contraseña hasheada ---");
 
-    try {
-        hashedPassword = await bcrypt.hashSync(rPassword, 10)
-    } catch (error) {
-        req.flash('notice', 'Sorry, there was an error processing the registration.')
-        return res.status(500).render('account/register', {
-            title: 'Registration',
-            nav,
-            errors: null
-        })
-    }
-
-    const regResult = await accountModel.registerAccount(
-        rFirstName, rLastName, rEmail, hashedPassword
-    )
+  console.log("--- 4. Llamando al modelo para registrar la cuenta ---");
+  const regResult = await accountModel.registerAccount(
+    rFirstName, rLastName, rEmail, hashedPassword
+  );
+  console.log("--- 5. El modelo ha respondido. Resultado:", regResult);
 
   if (regResult) {
-    req.flash('notice', `Congratulations, you're registered ${rFirstName}. Please log in.`)
-    return res.status(201).render('account/login', { title: 'Login', nav })
+    console.log("--- 6. Registro exitoso. Renderizando vista de login. ---");
+    req.flash('notice', `Congratulations, you're registered ${rFirstName}. Please log in.`);
+    return res.status(201).render('account/login', { title: 'Login', nav });
   } else {
-    req.flash('notice', 'Sorry, the registration failed.')
+    console.log("--- 7. El registro falló. Renderizando vista de registro de nuevo. ---");
+    req.flash('notice', 'Sorry, the registration failed.');
     return res.status(400).render('account/register', {
-        title: 'Registration',
-        nav,
-        errors: req.errors || [],
-        rFirstName,
-        rLastName,
-        rEmail,
-        newsletter,
-        role
-    })
+      title: 'Registration',
+      nav,
+      errors: req.errors || [],
+      rFirstName,
+      rLastName,
+      rEmail,
+    });
   }
 }
+
+/* ****************************************
+ * Process Login Request
+ * ************************************ */
+async function accountLogin(req, res) {
+  let nav = await utilities.getNav()
+  const { account_email, account_password } = req.body
+  const accountData = await accountModel.getAccountByEmail(account_email)
+  
+  if (!accountData) {
+   req.flash("notice", "Please check your credentials and try again.")
+   res.status(400).render("account/login", {
+    title: "Login",
+    nav,
+    errors: null,
+    account_email,
+   })
+  return
+  }
+
+  try {
+   if (await bcrypt.compare(account_password, accountData.account_password)) {
+    delete accountData.account_password
+    const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 })
+
+    console.log("Setting JWT cookie:", accessToken);
+
+    res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+    return res.redirect("/account/")
+   } else {
+    req.flash("notice", "Please check your credentials and try again.")
+    res.status(400).render("account/login", {
+     title: "Login",
+     nav,
+     errors: null,
+     account_email,
+    })
+   }
+  } catch (error) {
+   return new Error('Access Forbidden')
+  }
+ }
+
 
 /* ****************************************
 * Build Account Update View
@@ -151,4 +198,13 @@ function logout(req, res) {
 }
 
 
-module.exports = { buildLogin, buildRegister, registerAccount, buildUpdateView, updateAccount, updatePassword, logout }
+module.exports = { 
+  buildLogin, 
+  buildRegister, 
+  registerAccount, 
+  buildUpdateView, 
+  updateAccount, 
+  updatePassword, 
+  logout,
+  accountLogin
+}

@@ -5,19 +5,33 @@ const utilities = require("../utilities");
 const { registrationRules, checkRegData, updateAccountRules, updatePasswordRules } = require('../validators/account-validation');
 
 
-router.get("/login/",utilities.handleErrors(buildLogin))
-router.get("/register/",utilities.handleErrors(buildRegister))
+router.get(
+  "/login/",
+  utilities.handleErrors(buildLogin)
+)
+
+router.get(
+  "/register/",
+  utilities.handleErrors(buildRegister)
+)
+
 router.post(
     '/register', 
-    registrationRules,
+    registrationRules(),
     checkRegData,
     utilities.handleErrors(registerAccount)
 )
-router.post('/login', (req, res) => {
-  res.status(200).send('login process')
-})
+router.post(
+  '/login',
+  (req, res) => {
+    res.status(200).send('login process')
+  }
+)
 
-router.get("/update/:account_id", utilities.handleErrors(buildUpdateView))
+router.get(
+  "/update/:account_id", 
+  utilities.handleErrors(buildUpdateView)
+)
 
 router.post(
     "/update/account",

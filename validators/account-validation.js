@@ -34,11 +34,18 @@ function registrationRules() {
 }
 
 async function checkRegData(req, res, next) {
-  const errors = validationResult(req)
-  if (errors.isEmpty()) return next()
+  console.log("--- A. Entrando a checkRegData ---");
+  const errors = validationResult(req);
+  
+  if (errors.isEmpty()) {
+    console.log("--- B. No hay errores de validación. Llamando a next() ---");
+    return next();
+  }
 
-  const utilities = require('../utilities/')
-  const nav = await utilities.getNav()
+  console.log("--- C. Se encontraron errores de validación. ---");
+  const utilities = require('../utilities/');
+  const nav = await utilities.getNav();
+  console.log("--- D. Navegación obtenida. Renderizando vista de error. ---");
 
   return res.status(400).render('account/register', {
     title: 'Registration',
@@ -47,8 +54,9 @@ async function checkRegData(req, res, next) {
     rFirstName: req.body.rFirstName,
     rLastName: req.body.rLastName,
     rEmail: req.body.rEmail
-  })
+  });
 }
+
 
 function updateAccountRules () {
   return [
@@ -73,4 +81,9 @@ function updatePasswordRules() {
     ];
 }
 
-module.exports = { registrationRules, checkRegData, updateAccountRules, updatePasswordRules }
+module.exports = { 
+  registrationRules, 
+  checkRegData, 
+  updateAccountRules, 
+  updatePasswordRules 
+}
