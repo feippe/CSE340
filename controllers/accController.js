@@ -65,7 +65,11 @@ async function registerAccount(req, res) {
   if (regResult) {
     console.log("--- 6. Registro exitoso. Renderizando vista de login. ---");
     req.flash('notice', `Congratulations, you're registered ${rFirstName}. Please log in.`);
-    return res.status(201).render('account/login', { title: 'Login', nav });
+    return res.status(201).render('account/login', { 
+      title: 'Login', 
+      nav,
+      errors: null
+    });
   } else {
     console.log("--- 7. El registro falló. Renderizando vista de registro de nuevo. ---");
     req.flash('notice', 'Sorry, the registration failed.');
@@ -75,7 +79,7 @@ async function registerAccount(req, res) {
       errors: req.errors || [],
       rFirstName,
       rLastName,
-      rEmail,
+      rEmail
     });
   }
 }
@@ -207,6 +211,19 @@ function logout(req, res) {
     res.redirect("/");
 }
 
+/* ****************************************
+* Build Account Management view
+* *************************************** */
+async function buildAccountManagement(req, res, next) {
+    let nav = await utilities.getNav()
+    res.render("account/management", {
+      title: "Account Management",
+      nav,
+      errors: null,
+    })
+}
+
+
 
 module.exports = { 
   buildLogin, 
@@ -216,5 +233,6 @@ module.exports = {
   updateAccount, 
   updatePassword, 
   logout,
-  accountLogin
+  accountLogin,
+  buildAccountManagement
 }

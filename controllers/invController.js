@@ -1,6 +1,7 @@
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities/")
 const { validationResult } = require('express-validator');
+const reviewModel = require("../models/review-model");
 
 const invCont = {}
 
@@ -22,15 +23,20 @@ invCont.buildByInventoryId = async function (req, res, next) {
       err.status = 404;
       throw err;
     }
+    const reviews = await reviewModel.getReviewsByInventoryId(inv_id);
 
     const nav = await utilities.getNav();
     const detailHTML = utilities.buildVehicleDetail(vehicle);
+    const reviewsHTML = utilities.buildReviewsHTML(reviews);
 
     const title = `${vehicle.inv_make} ${vehicle.inv_model}`;
     res.render("inventory/detail", {
       title,
       nav,
-      detailHTML
+      detailHTML,
+      reviewsHTML,
+      inv_id,
+      errors: null
     });
   } catch (error) {
     next(error);
@@ -47,6 +53,52 @@ invCont.buildManagement = async function (req, res) {
     nav,
     classificationSelect
   })
+};
+
+
+/* ***************************
+ * Process new review submission
+ * ************************** */
+invCont.addReview = async function (req, res, next) {
+    const { review_text, inv_id, account_id } = req.body;
+
+    const result = await reviewModel.addReview(
+        review_text,
+        inv_id,
+        account_id
+    );
+
+    if (result) {
+        req.flash("notice", "Thank you for your review!");
+    } else {
+        req.flash("notice", "Sorry, there was an error submitting your review.");
+    }
+    // Redirect back to the same detail page
+    res.redirect(`/inv/detail/${inv_id}`);
+};
+
+
+/* ***************************
+ * Build inventory by classification view
+ * ************************** */
+invCont.buildByClassificationId = async function (req, res, next) {
+  const classification_id = req.params.classificationId;
+  const data = await invModel.getInventoryByClassificationId(classification_id);
+  if (!data || data.length === 0) {
+    res.status(404).render("./errors/error", {
+      title: "No Vehicles",
+      message: "Sorry, no vehicles match that classification."
+    });
+    return;
+  }
+  const grid = await utilities.buildClassificationGrid(data);
+  const nav = await utilities.getNav();
+  const className = data[0].classification_name;
+  res.render("./inventory/classification", {
+    title: className + " vehicles",
+    nav,
+    grid,
+  });
 };
 
 /* ============================
@@ -363,6 +415,8 @@ invCont.deleteVehicle = async function (req, res, next) {
     res.redirect(`/inv/delete/${inv_id}`);
   }
 };
+
+
 
 
 

@@ -57,7 +57,7 @@ Util.buildClassificationGrid = async function (data) {
         vehicle.inv_model +
         ' on CSE Motors" /></a>'
       grid += '<div class="namePrice">'
-      grid += "<hr />"
+      //grid += "<hr />"
       grid += "<h2>"
       grid +=
         '<a href="../../inv/detail/' +
@@ -143,27 +143,30 @@ Util.handleErrors =
   (req, res, next) =>
     Promise.resolve(fn(req, res, next)).catch(next)
 
+
+
 /* **************************************
  * Build the vehicle detail HTML
  * ************************************ */
 Util.buildVehicleDetail = function (v) {
   return `
-  <article class="vehicle-detail">
-    <div class="vehicle-detail__media">
-      <img src="${v.inv_image}" alt="${v.inv_year} ${v.inv_make} ${v.inv_model}">
+    <div class="pdp-container">
+      <div class="pdp-image-wrapper">
+        <img src="${v.inv_image}" alt="Image of ${v.inv_make} ${v.inv_model}">
+      </div>
+      <div class="pdp-details">
+        <h1 class="pdp-title">${v.inv_make} ${v.inv_model}</h1>
+        <h2 class="pdp-year">${v.inv_year}</h2>
+        <p class="pdp-price">${Util.usd(v.inv_price)}</p>
+        <ul class="pdp-specs">
+          <li><strong>Mileage:</strong> ${Util.commas(v.inv_miles)}</li>
+          <li><strong>Color:</strong> ${v.inv_color}</li>
+        </ul>
+        <p class="pdp-description">${v.inv_description}</p>
+      </div>
     </div>
-    <div class="vehicle-detail__content">
-      <h2 class="vehicle-detail__title">${v.inv_year} ${v.inv_make} ${v.inv_model}</h2>
-      <p class="vehicle-detail__price"><strong>Price:</strong> ${Util.usd(v.inv_price)}</p>
-      <ul class="vehicle-detail__specs">
-        <li><strong>Mileage:</strong> ${Util.commas(v.inv_miles)} miles</li>
-        <li><strong>Color:</strong> ${v.inv_color}</li>
-      </ul>
-      <p class="vehicle-detail__desc">${v.inv_description}</p>
-    </div>
-  </article>
-  `
-}
+  `;
+};
 
 
 
@@ -178,5 +181,26 @@ Util.buildClassificationList = async function (selected_id = null) {
   classificationList += '</select>'
   return classificationList
 }
+
+
+/* **************************************
+ * Build the reviews HTML
+ * ************************************ */
+Util.buildReviewsHTML = function (reviews) {
+    let html = '<ul class="review-list">';
+    if (reviews.length > 0) {
+        reviews.forEach(review => {
+            const reviewDate = new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            html += `<li class="review-item">`;
+            html += `<p class="review-text">"${review.review_text}"</p>`;
+            html += `<p class="review-author">- ${review.account_firstname}, on ${reviewDate}</p>`;
+            html += `</li>`;
+        });
+    } else {
+        html += '<li>Be the first to leave a review!</li>';
+    }
+    html += '</ul>';
+    return html;
+};
 
 module.exports = Util

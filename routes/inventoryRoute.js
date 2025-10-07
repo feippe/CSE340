@@ -3,6 +3,7 @@ const router = new express.Router();
 const invController = require('../controllers/invController');
 const utilities = require("../utilities");
 const { classificationRules, checkClassificationData, inventoryRules, checkInventoryData } = require('../validators/inventory-validation')
+const reviewValidate = require('../validators/review-validation')
 
 router.get(
   "/detail/:inv_id",
@@ -76,6 +77,13 @@ router.post(
   utilities.checkAccountType,
   utilities.handleErrors(invController.deleteVehicle)
 )
+
+router.post(
+    "/detail/add-review",
+    reviewValidate.reviewRules(),
+    reviewValidate.checkReviewData,
+    utilities.handleErrors(invController.addReview)
+);
 
 
 module.exports = router;

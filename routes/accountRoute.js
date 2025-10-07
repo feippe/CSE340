@@ -1,6 +1,6 @@
 const express = require('express');
 const router = new express.Router();
-const { accountLogin, buildLogin, buildRegister, registerAccount, buildUpdateView, updateAccount, updatePassword, logout } = require('../controllers/accController');
+const { buildAccountManagement, accountLogin, buildLogin, buildRegister, registerAccount, buildUpdateView, updateAccount, updatePassword, logout } = require('../controllers/accController');
 const utilities = require("../utilities");
 const { checkUpdateData, loginRules, checkLoginData, registrationRules, checkRegData, updateAccountRules, updatePasswordRules } = require('../validators/account-validation');
 
@@ -52,6 +52,11 @@ router.get(
   "/logout", 
   utilities.handleErrors(logout)
 )
+
+router.get(
+  "/", 
+  utilities.handleErrors(buildAccountManagement)
+);
 
 
 module.exports = router;

@@ -16,6 +16,33 @@
       <div class="detail-wrapper">
         <%- detailHTML %>
       </div>
+
+      <hr>
+
+      <div class="reviews-section">
+          <h2>Customer Reviews</h2>
+          <%- reviewsHTML %>
+      </div>
+      
+      <% if (locals.loggedin) { %>
+      <div class="review-form-container">
+          <h3>Leave a Review</h3>
+          <form id="reviewForm" action="/inv/detail/add-review" method="post">
+              <fieldset>
+                  <div class="form-group">
+                      <label for="review_text">Your Review:</label>
+                      <textarea name="review_text" id="review_text" rows="4" required minlength="10"></textarea>
+                  </div>
+                  <input type="hidden" name="inv_id" value="<%= inv_id %>">
+                  <input type="hidden" name="account_id" value="<%= locals.accountData.account_id %>">
+                  <button type="submit" class="form-button">Submit Review</button>
+              </fieldset>
+          </form>
+      </div>
+      <% } else { %>
+          <p>You must be <a href="/account/login">logged in</a> to leave a review.</p>
+      <% } %>
+
     </main>
 
     <footer>
